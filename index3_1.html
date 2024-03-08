@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Scanner</title>
+</head>
+<body>
+    <div id="scanner">
+        <h1>Scan Here</h1>
+        <video id="qr-video" width="30%" height="30%" autoplay playsinline></video>
+    </div>
+    <div class="left">
+        <h1 id="col-name"></h1>
+        <i><h3 id="col-alias"></h3></i>
+
+        <h2 id="col-history">Sejarah</h2>
+        <div id="col-history_paragraph"></div>
+
+        <h2 id="col-characteristic">Karakteristik</h2>
+        <div id="col-characteristic_paragraph"></div>
+
+        <h2 id="col-fact">Fakta Menarik</h2>
+        <div id="col-fact_paragraph"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.0.3/dist/jsQR.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const video = document.getElementById("qr-video");
+            const colName = document.getElementById("col-name");
+            const colAlias = document.getElementById("col-alias");
+            const colHistory = document.getElementById("col-history_paragraph");
+            const colCharacteristic = document.getElementById("col-characteristic_paragraph");
+            const colFact = document.getElementById("col-fact_paragraph");
+
+            let lastQRCodeResult = ""; // Menyimpan hasil terakhir
+
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then((stream) => {
+                    video.srcObject = stream;
+
+                    const track = stream.getVideoTracks()[0];
+                    const imageCapture = new ImageCapture(track);
+
+                    const scanQRCode = () => {
+                        imageCapture.grabFrame()
+                            .then((imageBitmap) => {
+                                const canvas = document.createElement("canvas");
+                                const ctx = canvas.getContext("2d");
+                                canvas.width = imageBitmap.width;
+                                canvas.height = imageBitmap.height;
+                                ctx.drawImage(imageBitmap, 0, 0);
+
+                                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                                const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+                                if (code) {
+                                    if (lastQRCodeResult !== code.data) {
+                                        lastQRCodeResult = code.data;
+                                        handleQRCodeResult(lastQRCodeResult);
+                                    }
+                                }
+
+                                requestAnimationFrame(scanQRCode);
+                            })
+                            .catch((error) => {
+                                console.error("Error grabbing frame:", error);
+                            });
+                    };
+
+                    const handleQRCodeResult = (qrData) => {
+                        const data = {
+                            "Tyranosaurus": {
+                                "name": "Tyranosaurus",
+                                "alias": "T-Rex",
+                                "history": "Tyranosaurus rex adalah spesies dinosaurus karnivora yang hidup sekitar 68 hingga 66 juta tahun yang lalu.",
+                                "characteristic": "T-Rex dikenal memiliki ukuran besar, rahang yang kuat, dan gigi tajam. Mereka adalah predator puncak di ekosistem mereka.",
+                                "fact": "Fakta Menarik: Tyranosaurus rex memiliki sekitar 50 gigi yang dapat mencapai panjang hingga 15 sentimeter."
+                            },
+                            "Keris": {
+                                "name": "Keris",
+                                "alias": "Keris",
+                                "history": "Keris adalah senjata tradisional yang berasal dari Indonesia. Senjata ini memiliki nilai simbolis dan keagamaan.",
+                                "characteristic": "Keris memiliki bilah berpola khas dan gagang yang unik. Biasanya dihiasi dengan ukiran dan memiliki pamor (pola logam) yang khas.",
+                                "fact": "Fakta Menarik: Keris dianggap sebagai senjata pusaka dan memiliki makna spiritual dalam budaya Indonesia."
+                            }
+                        };
+
+                        const collection = data[qrData];
+
+                        if (collection) {
+                            colName.textContent = collection.name;
+                            colAlias.textContent = collection.alias;
+                            colHistory.textContent = 'Sejarah';
+                            colHistory_paragraph.textContent = collection.history;
+                            colCharacteristic.textContent = 'Karakteristik';
+                            colCharacteristic_paragraph.textContent = collection.characteristic;
+                            colFact.textContent = 'Fakta Menarik';
+                            colFact_paragraph.textContent = collection.fact;
+                        }
+                    };
+
+                    scanQRCode();
+                })
+                .catch((error) => {
+                    console.error("Error accessing camera:", error);
+                });
+        });
+    </script>
+</body>
+</html>
