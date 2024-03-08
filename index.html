@@ -30,9 +30,12 @@
             const video = document.getElementById("qr-video");
             const colName = document.getElementById("col-name");
             const colAlias = document.getElementById("col-alias");
-            const colHistory = document.getElementById("col-history_paragraph");
-            const colCharacteristic = document.getElementById("col-characteristic_paragraph");
-            const colFact = document.getElementById("col-fact_paragraph");
+            const colHistory = document.getElementById("col-history");
+            const colHistory_paragraph = document.getElementById("col-history_paragraph");
+            const colCharacteristic = document.getElementById("col-characteristic");
+            const colCharacteristic_paragraph = document.getElementById("col-characteristic_paragraph");
+            const colFact = document.getElementById("col-fact");
+            const colFact_paragraph = document.getElementById("col-fact_paragraph");
 
             let lastQRCodeResult = ""; // Menyimpan hasil terakhir
 
@@ -92,11 +95,8 @@
                         if (collection) {
                             colName.textContent = collection.name;
                             colAlias.textContent = collection.alias;
-                            colHistory.textContent = 'Sejarah';
                             colHistory_paragraph.textContent = collection.history;
-                            colCharacteristic.textContent = 'Karakteristik';
                             colCharacteristic_paragraph.textContent = collection.characteristic;
-                            colFact.textContent = 'Fakta Menarik';
                             colFact_paragraph.textContent = collection.fact;
                         }
                     };
